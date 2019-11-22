@@ -37,7 +37,8 @@ module.exports = async () => {
     createQuantity,
     createPurchaseQuantity,
     createWallet,
-    createDeliveryMethods
+    createDeliveryMethods,
+    createMemories
   ]
 
   for (const creator of creators) {
@@ -57,7 +58,7 @@ async function createChallenges () {
       hint = hint.replace(/OWASP Juice Shop's/, `${config.get('application.name')}'s`)
 
       try {
-        const challenge = await models.Challenge.create({
+        datacache.challenges[key] = await models.Challenge.create({
           key,
           name,
           category,
@@ -68,7 +69,6 @@ async function createChallenges () {
           hintUrl: showHints ? hintUrl : null,
           disabledEnv: config.get('challenges.safetyOverride') ? null : effectiveDisabledEnv
         })
-        datacache.challenges[key] = challenge
       } catch (err) {
         logger.error(`Could not insert Challenge ${name}: ${err.message}`)
       }
@@ -211,6 +211,32 @@ function createQuantity () {
     })
   )
 }
+function createMemories () {
+  const memories = [models.Memory.create({
+    imagePath: 'assets/public/images/uploads/😼-#zatschi-#whoneedsfourlegs-1572600969477.jpg',
+    caption: '😼 #zatschi #whoneedsfourlegs',
+    UserId: datacache.users.bjoernOwasp.id
+  }).catch((err) => {
+    logger.error(`Could not create memory: ${err.message}`)
+  })]
+  Array.prototype.push.apply(memories, Promise.all(
+    config.get('memories').map((memory) => {
+      if (utils.startsWith(memory.image, 'http')) {
+        const imageUrl = memory.image
+        memory.image = utils.extractFilename(memory.image)
+        utils.downloadToFile(imageUrl, 'assets/public/images/uploads/' + memory.image)
+      }
+      return models.Memory.create({
+        imagePath: 'assets/public/images/uploads/' + memory.image,
+        caption: memory.caption,
+        UserId: datacache.users[memory.user].id
+      }).catch((err) => {
+        logger.error(`Could not create memory: ${err.message}`)
+      })
+    })
+  ))
+  return memories
+}
 
 function createProducts () {
   const products = utils.thaw(config.get('products')).map((product) => {
@@ -222,7 +248,7 @@ function createProducts () {
     product.image = product.image || 'undefined.png'
     if (utils.startsWith(product.image, 'http')) {
       const imageUrl = product.image
-      product.image = decodeURIComponent(product.image.substring(product.image.lastIndexOf('/') + 1))
+      product.image = utils.extractFilename(product.image)
       utils.downloadToFile(imageUrl, 'frontend/dist/frontend/assets/public/images/products/' + product.image)
     }
 
@@ -251,7 +277,7 @@ function createProducts () {
   let blueprint = blueprintRetrivalChallengeProduct.fileForRetrieveBlueprintChallenge
   if (utils.startsWith(blueprint, 'http')) {
     const blueprintUrl = blueprint
-    blueprint = decodeURIComponent(blueprint.substring(blueprint.lastIndexOf('/') + 1))
+    blueprint = utils.extractFilename(blueprint)
     utils.downloadToFile(blueprintUrl, 'frontend/dist/frontend/assets/public/images/products/' + blueprint)
   }
   datacache.retrieveBlueprintChallengeFile = blueprint // TODO Do not cache separately but load from config where needed (same as keywordsForPastebinDataLeakChallenge)

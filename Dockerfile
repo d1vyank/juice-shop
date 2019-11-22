@@ -2,6 +2,7 @@ FROM node:12 as installer
 COPY . /juice-shop
 WORKDIR /juice-shop
 RUN npm install --production --unsafe-perm
+RUN npm dedupe
 RUN rm -rf frontend/node_modules
 
 FROM node:12-alpine
@@ -14,7 +15,7 @@ LABEL maintainer="Bjoern Kimminich <bjoern.kimminich@owasp.org>" \
     org.opencontainers.image.vendor="Open Web Application Security Project" \
     org.opencontainers.image.documentation="http://help.owasp-juice.shop" \
     org.opencontainers.image.licenses="MIT" \
-    org.opencontainers.image.version="9.1.3" \
+    org.opencontainers.image.version="9.2.0" \
     org.opencontainers.image.url="https://owasp-juice.shop" \
     org.opencontainers.image.source="https://github.com/bkimminich/juice-shop" \
     org.opencontainers.image.revision=$VCS_REF \
