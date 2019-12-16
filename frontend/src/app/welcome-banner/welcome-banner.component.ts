@@ -28,7 +28,7 @@ export class WelcomeBannerComponent implements OnInit {
         this.message = config.application.welcomeBanner.message
       }
       if (config && config.application) {
-        this.showHackingInstructor = config.application.showHackingInstructor
+        this.showHackingInstructor = (config.hackingInstructor && config.hackingInstructor.isEnabled) || config.application.showHackingInstructor // TODO Remove fallback with v10.0.0
       }
     }, (err) => console.log(err))
   }
@@ -40,6 +40,8 @@ export class WelcomeBannerComponent implements OnInit {
 
   closeWelcome (): void {
     this.dialogRef.close()
-    this.cookieService.put(this.welcomeBannerStatusCookieKey, 'dismiss')
+    let expires = new Date()
+    expires.setFullYear(expires.getFullYear() + 1)
+    this.cookieService.put(this.welcomeBannerStatusCookieKey, 'dismiss', { expires })
   }
 }

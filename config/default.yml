@@ -9,7 +9,6 @@ application:
   showChallengeSolvedNotifications: true
   showChallengeHints: true
   showVersionNumber: true
-  showHackingInstructor: true
   showGitHubLinks: true
   numberOfRandomFakeUsers: 0
   twitterUrl: 'https://twitter.com/owasp_juiceshop'
@@ -19,8 +18,6 @@ application:
   pressKitUrl: 'https://github.com/OWASP/owasp-swag/tree/master/projects/juice-shop'
   planetOverlayMap: orangemap2k.jpg
   planetName: Orangeuze
-  deluxePage:
-    deluxeDeliveryImage: delivery_juiceshop.png
   recyclePage:
     topProductImage: fruit_press.jpg
     bottomProductImage: apple_pressings.jpg
@@ -49,6 +46,9 @@ application:
 challenges:
   safetyOverride: false
   overwriteUrlForProductTamperingChallenge: 'https://owasp.slack.com'
+hackingInstructor:
+  isEnabled: true
+  avatarImage: juicyBot.png
 products:
   -
     name: 'Apple Juice (1000ml)'
@@ -250,7 +250,7 @@ products:
     description: 'Our 95mm circle coasters are printed in full color and made from thick, premium coaster board.'
     price: 19.99
     quantity: 0
-    image: coaster.png
+    image: coaster.jpg
 memories:
   -
     image: 'magn(et)ificent!-1571814229653.jpg'
